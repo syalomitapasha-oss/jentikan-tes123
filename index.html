@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Form Jentik Nyamuk</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #a2d4ec, #f0f8ff);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      background-color: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+    }
+
+    h2 {
+      margin-top: 0;
+      color: #2a5d84;
+    }
+
+    label {
+      display: block;
+      text-align: left;
+      margin-top: 15px;
+      color: #333;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #2a5d84;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #1f4766;
+    }
+
+    #status {
+      color: red;
+      margin-top: 10px;
+    }
+
+    .logo {
+      width: 80px;
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- Gambar nyamuk -->
+    <img src="030a9dc6-6fc2-41fd-9c90-a97e5693971f.png" alt="Nyamuk" class="logo">
+
+    <h2>Form Pengaduan Jentik Nyamuk</h2>
+
+    <form id="form">
+      <label>Nama:</label>
+      <input type="text" id="nama" required>
+
+      <label>Alamat:</label>
+      <input type="text" id="alamat" required>
+
+      <label>Keterangan:</label>
+      <textarea id="pesan" rows="4" required></textarea>
+
+      <button type="button" onclick="kirimWA()">Kirim ke WhatsApp</button>
+    </form>
+
+    <p id="status"></p>
+  </div>
+
+  <script>
+    function kirimWA() {
+      if (!navigator.geolocation) {
+        document.getElementById('status').innerText = "Browser tidak mendukung GPS.";
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(function(position) {
+        var lat = position.coords.latitude;
+        var lon = position.coords.longitude;
+
+        var nama = document.getElementById('nama').value;
+        var alamat = document.getElementById('alamat').value;
+        var pesan = document.getElementById('pesan').value;
+
+        var link = "https://wa.me/6281524219699?text=" +
+          encodeURIComponent("🦟 Pengaduan Jentik Nyamuk\n\n") +
+          encodeURIComponent("👤 Nama: " + nama + "\n") +
+          encodeURIComponent("🏠 Alamat: " + alamat + "\n") +
+          encodeURIComponent("📝 Pesan: " + pesan + "\n") +
+          encodeURIComponent("📍 Lokasi: https://maps.google.com/?q=" + lat + "," + lon);
+
+        window.open(link, '_blank');
+      }, function(error) {
+        document.getElementById('status').innerText = "Gagal mengambil lokasi. Aktifkan GPS.";
+      });
+    }
+  </script>
+</body>
+</html>
