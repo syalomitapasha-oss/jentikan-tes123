@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>Form Jentik Nyamuk</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
   <style>
     body {
       margin: 0;
@@ -22,7 +21,7 @@
       padding: 30px;
       border-radius: 15px;
       box-shadow: 0 0 20px rgba(0,0,0,0.1);
-      max-width: 400px;
+      max-width: 450px;
       width: 100%;
       text-align: center;
     }
@@ -39,12 +38,22 @@
       color: #333;
     }
 
-    input, textarea {
+    input, textarea, select {
       width: 100%;
       padding: 10px;
       margin-top: 5px;
       border: 1px solid #ccc;
       border-radius: 8px;
+    }
+
+    .checkbox-group {
+      text-align: left;
+      margin-top: 10px;
+    }
+
+    .checkbox-group label {
+      display: block;
+      margin-bottom: 5px;
     }
 
     button {
@@ -75,9 +84,7 @@
 
 <body>
   <div class="container">
-    <!-- Gambar nyamuk -->
     <img src="030a9dc6-6fc2-41fd-9c90-a97e5693971f.png" alt="Nyamuk" class="logo">
-
     <h2>Form Pengaduan Jentik Nyamuk</h2>
 
     <form id="form">
@@ -87,8 +94,26 @@
       <label>Alamat:</label>
       <input type="text" id="alamat" required>
 
-      <label>Keterangan:</label>
-      <textarea id="pesan" rows="4" required></textarea>
+      <label>Apakah ada wadah yang terdapat jentik?</label>
+      <select id="adaJentik" onchange="toggleWadah()">
+        <option value="">-- Pilih Jawaban --</option>
+        <option value="Ya">Ya</option>
+        <option value="Tidak">Tidak</option>
+      </select>
+
+      <div id="wadahGroup" style="display: none;">
+        <label>Jenis wadah yang ditemukan:</label>
+        <div class="checkbox-group">
+          <label><input type="checkbox" value="Tong Air / Tandon Air"> Tong Air / Tandon Air</label>
+          <label><input type="checkbox" value="Bak Air"> Bak Air</label>
+          <label><input type="checkbox" value="Drum"> Drum</label>
+          <label><input type="checkbox" value="Selokan"> Selokan</label>
+          <label><input type="checkbox" value="Genangan Air"> Genangan Air</label>
+        </div>
+
+        <label style="margin-top:15px;">Kira-kira ada berapa liter air? (opsional)</label>
+        <input type="text" id="liter">
+      </div>
 
       <button type="button" onclick="kirimWA()">Kirim ke WhatsApp</button>
     </form>
@@ -97,6 +122,12 @@
   </div>
 
   <script>
+    function toggleWadah() {
+      const select = document.getElementById('adaJentik');
+      const wadahGroup = document.getElementById('wadahGroup');
+      wadahGroup.style.display = select.value === "Ya" ? "block" : "none";
+    }
+
     function kirimWA() {
       if (!navigator.geolocation) {
         document.getElementById('status').innerText = "Browser tidak mendukung GPS.";
@@ -109,13 +140,23 @@
 
         var nama = document.getElementById('nama').value;
         var alamat = document.getElementById('alamat').value;
-        var pesan = document.getElementById('pesan').value;
+        var jentik = document.getElementById('adaJentik').value;
+
+        var liter = document.getElementById('liter').value || "-";
+
+        var wadahList = [];
+        document.querySelectorAll('#wadahGroup input[type="checkbox"]:checked').forEach(function(checkbox) {
+          wadahList.push(checkbox.value);
+        });
+        var wadahText = wadahList.length > 0 ? wadahList.join(', ') : "-";
 
         var link = "https://wa.me/6281524219699?text=" +
           encodeURIComponent("🦟 Pengaduan Jentik Nyamuk\n\n") +
           encodeURIComponent("👤 Nama: " + nama + "\n") +
           encodeURIComponent("🏠 Alamat: " + alamat + "\n") +
-          encodeURIComponent("📝 Pesan: " + pesan + "\n") +
+          encodeURIComponent("🔍 Ada jentik? " + jentik + "\n") +
+          encodeURIComponent("🧺 Jenis Wadah: " + wadahText + "\n") +
+          encodeURIComponent("💧 Perkiraan Jumlah Air: " + liter + " liter\n") +
           encodeURIComponent("📍 Lokasi: https://maps.google.com/?q=" + lat + "," + lon);
 
         window.open(link, '_blank');
